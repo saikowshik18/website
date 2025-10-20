@@ -1,0 +1,1526 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}List Your Product | Second Love{% endblock %}
+
+{% block content %}
+<div class="full-width-container">
+    <div class="sell-form-wrapper">
+        <div class="sell-header">
+            <h1>List Your Product</h1>
+            <p>Sell your items to fellow students</p>
+        </div>
+
+        <div class="form-step-indicator">
+            <div class="step active">
+                <div class="step-circle">1</div>
+                <div class="step-label">Product Details</div>
+            </div>
+            <div class="step">
+                <div class="step-circle">2</div>
+                <div class="step-label">Price & Image</div>
+            </div>
+            <div class="step">
+                <div class="step-circle">3</div>
+                <div class="step-label">Seller Details</div>
+            </div>
+            <div class="step">
+                <div class="step-circle">4</div>
+                <div class="step-label">Review</div>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress" id="form-progress"></div>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" action="{% url 'sell_product' %}" class="sell-form-container">
+            {% csrf_token %}
+            
+            <div class="form-tabs">
+                <div class="form-tab active" data-tab="product-details">
+                    <i class="fas fa-info-circle"></i> Product Details
+                </div>
+                <div class="form-tab" data-tab="price-image">
+                    <i class="fas fa-camera"></i> Price & Image
+                </div>
+                <div class="form-tab" data-tab="seller-details">
+                    <i class="fas fa-user"></i> Seller Details
+                </div>
+                <div class="form-tab" data-tab="review">
+                    <i class="fas fa-check-circle"></i> Review
+                </div>
+            </div>
+
+            <div class="form-content">
+                <!-- Product Details Section -->
+                <div class="form-section active" id="product-details-section">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label">Product Name *</label>
+                            <input type="text" class="custom-input" name="product_name" placeholder="e.g. MacBook Pro 2023, Calculus Textbook, Desk Lamp" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Category *</label>
+                            <div class="option-grid">
+                                <div class="option-item" data-value="electronics">
+                                    <i class="fas fa-laptop"></i>
+                                    <span>Electronics</span>
+                                </div>
+                                <div class="option-item" data-value="books">
+                                    <i class="fas fa-book"></i>
+                                    <span>Books</span>
+                                </div>
+                                <div class="option-item" data-value="furniture">
+                                    <i class="fas fa-couch"></i>
+                                    <span>Furniture</span>
+                                </div>
+                                <div class="option-item" data-value="clothing">
+                                    <i class="fas fa-tshirt"></i>
+                                    <span>Clothing</span>
+                                </div>
+                                <div class="option-item" data-value="other">
+                                    <i class="fas fa-box"></i>
+                                    <span>Other</span>
+                                </div>
+                            </div>
+                            <input type="hidden" name="category" id="category" required>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Product Description *</label>
+                            <textarea class="custom-input custom-textarea" name="product_description" placeholder="Describe your product, condition, features, and any included accessories..." required rows="5"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Condition</label>
+                            <div class="option-grid">
+                                <div class="option-item" data-value="new">
+                                    <i class="fas fa-tag"></i>
+                                    <span>New</span>
+                                </div>
+                                <div class="option-item" data-value="excellent">
+                                    <i class="fas fa-gem"></i>
+                                    <span>Excellent</span>
+                                </div>
+                                <div class="option-item" data-value="good">
+                                    <i class="fas fa-thumbs-up"></i>
+                                    <span>Good</span>
+                                </div>
+                                <div class="option-item" data-value="fair">
+                                    <i class="fas fa-meh"></i>
+                                    <span>Fair</span>
+                                </div>
+                            </div>
+                            <input type="hidden" name="condition" id="condition">
+                        </div>
+                    </div>
+                    
+                    <div class="form-navigation">
+                        <button type="button" class="btn btn-prev" disabled>
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="btn btn-next" data-next="price-image">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Price & Image Section -->
+                <div class="form-section" id="price-image-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Price ($) *</label>
+                            <div class="price-input-container">
+                                <span class="currency-symbol">$</span>
+                                <input type="number" class="custom-input price-input" name="price" value="50" min="1" max="5000" required>
+                            </div>
+                            <div class="price-range">
+                                <input type="range" min="1" max="5000" value="50" class="custom-slider" id="price-slider">
+                                <div class="range-labels">
+                                    <span>$1</span>
+                                    <span>$5000</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Negotiable</label>
+                            <div class="option-grid">
+                                <div class="option-item" data-value="yes">
+                                    <i class="fas fa-handshake"></i>
+                                    <span>Yes</span>
+                                </div>
+                                <div class="option-item" data-value="no">
+                                    <i class="fas fa-ban"></i>
+                                    <span>Fixed Price</span>
+                                </div>
+                            </div>
+                            <input type="hidden" name="negotiable" id="negotiable" value="yes">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Upload Product Photo *</label>
+                            <div class="image-upload-container">
+                                <div class="image-upload-area" id="image-upload">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <h3>Click to Upload Product Photo</h3>
+                                    <p>Show your product in the best light (Max 5MB)</p>
+                                    <input type="file" id="file-input" name="product_photo" accept="image/*" style="display: none;">
+                                </div>
+                                <div class="image-preview-container" id="image-preview-container">
+                                    <!-- Single image preview will be shown here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-navigation">
+                        <button type="button" class="btn btn-prev" data-prev="product-details">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="btn btn-next" data-next="seller-details">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Seller Details Section -->
+                <div class="form-section" id="seller-details-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Contact Number *</label>
+                            <input type="tel" class="custom-input" name="contact_number" placeholder="+1 (555) 123-4567" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Room Number *</label>
+                            <input type="text" class="custom-input" name="room_number" placeholder="e.g. 101, A-12" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Campus Location *</label>
+                            <div class="location-grid">
+                                <div class="location-option" data-location="bh1-front">
+                                    <i class="fas fa-building"></i>
+                                    <div>BH1 Front</div>
+                                </div>
+                                <div class="location-option" data-location="bh1-back">
+                                    <i class="fas fa-building"></i>
+                                    <div>BH1 Back</div>
+                                </div>
+                                <div class="location-option" data-location="bh2-front">
+                                    <i class="fas fa-building"></i>
+                                    <div>BH2 Front</div>
+                                </div>
+                                <div class="location-option" data-location="bh2-back">
+                                    <i class="fas fa-building"></i>
+                                    <div>BH2 Back</div>
+                                </div>
+                                <div class="location-option" data-location="gh1-front">
+                                    <i class="fas fa-building"></i>
+                                    <div>GH1 Front</div>
+                                </div>
+                                <div class="location-option" data-location="gh1-back">
+                                    <i class="fas fa-building"></i>
+                                    <div>GH1 Back</div>
+                                </div>
+                                <div class="location-option" data-location="gh2-front">
+                                    <i class="fas fa-building"></i>
+                                    <div>GH2 Front</div>
+                                </div>
+                                <div class="location-option" data-location="gh2-back">
+                                    <i class="fas fa-building"></i>
+                                    <div>GH2 Back</div>
+                                </div>
+                                <div class="location-option" data-location="old-campus">
+                                    <i class="fas fa-building"></i>
+                                    <div>Old Campus</div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="campus_location" id="campus-location" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Floor Level *</label>
+                            <div class="floor-grid">
+                                <div class="floor-option" data-floor="ground">
+                                    <i class="fas fa-walking"></i>
+                                    <div>Ground Floor</div>
+                                    <small>Easy access</small>
+                                </div>
+                                <div class="floor-option" data-floor="first">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <div>First Floor</div>
+                                    <small>One flight up</small>
+                                </div>
+                                <div class="floor-option" data-floor="second">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <div>Second Floor</div>
+                                    <small>Good view</small>
+                                </div>
+                                <div class="floor-option" data-floor="third">
+                                    <i class="fas fa-mountain"></i>
+                                    <div>Third Floor</div>
+                                    <small>Best views</small>
+                                </div>
+                            </div>
+                            <input type="hidden" name="floor_level" id="floor-level" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Academic Year *</label>
+                            <div class="year-grid">
+                                <div class="year-option" data-year="p1">
+                                    <div>P1</div>
+                                    <small>Prep 1</small>
+                                </div>
+                                <div class="year-option" data-year="p2">
+                                    <div>P2</div>
+                                    <small>Prep 2</small>
+                                </div>
+                                <div class="year-option" data-year="e1">
+                                    <div>E1</div>
+                                    <small>Eng 1</small>
+                                </div>
+                                <div class="year-option" data-year="e2">
+                                    <div>E2</div>
+                                    <small>Eng 2</small>
+                                </div>
+                                <div class="year-option" data-year="e3">
+                                    <div>E3</div>
+                                    <small>Eng 3</small>
+                                </div>
+                                <div class="year-option" data-year="e4">
+                                    <div>E4</div>
+                                    <small>Eng 4</small>
+                                </div>
+                            </div>
+                            <input type="hidden" name="academic_year" id="academic-year" required>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Additional Contact Info</label>
+                            <textarea class="custom-input custom-textarea" name="additional_contact" placeholder="WhatsApp, Telegram, or other contact methods..." rows="2"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-navigation">
+                        <button type="button" class="btn btn-prev" data-prev="price-image">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="btn btn-next" data-next="review">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Review Section -->
+                <div class="form-section" id="review-section">
+                    <div class="review-container">
+                        <div class="review-preview">
+                            <h2>Review Your Product Listing</h2>
+                            <div class="preview-card" id="listing-preview">
+                                <div class="preview-image" id="preview-main-image">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <div class="preview-content">
+                                    <h3 class="preview-title" id="preview-title">Product Name</h3>
+                                    <div class="preview-price" id="preview-price">$50</div>
+                                    <div class="preview-details">
+                                        <div class="detail-item">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span id="preview-location">BH1 Front</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-layer-group"></i>
+                                            <span id="preview-floor">Ground Floor</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-door-closed"></i>
+                                            <span id="preview-room-number">Room 101</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-graduation-cap"></i>
+                                            <span id="preview-year">E2</span>
+                                        </div>
+                                    </div>
+                                    <div class="preview-features">
+                                        <span class="feature-tag" id="preview-category">Electronics</span>
+                                        <span class="feature-tag" id="preview-condition">Excellent</span>
+                                        <span class="feature-tag" id="preview-negotiable">Negotiable</span>
+                                    </div>
+                                    <p class="preview-description" id="preview-description">
+                                        Product description will appear here...
+                                    </p>
+                                    <div class="seller-info">
+                                        <div class="seller-avatar">
+                                            {% if user.first_name %}
+                                                {{ user.first_name|first|upper }}
+                                            {% else %}
+                                                {{ user.username|first|upper }}
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600;">
+                                                {% if user.get_full_name %}
+                                                    {{ user.get_full_name }}
+                                                {% else %}
+                                                    {{ user.username }}
+                                                {% endif %}
+                                            </div>
+                                            <div style="font-size: 0.9rem; color: #666;">Member since {{ user.date_joined|date:"Y" }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-navigation">
+                        <button type="button" class="btn btn-prev" data-prev="seller-details">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="submit" class="btn btn-submit">
+                            <i class="fas fa-check"></i> List My Product
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary: #8a4fff;
+        --primary-light: #a97dff;
+        --secondary: #ff4f8b;
+        --dark: #1a1a2e;
+        --light: #f8f9fa;
+        --gray: #e9ecef;
+        --text: #333;
+        --shadow: 0 10px 30px rgba(0,0,0,0.1);
+        --radius: 12px;
+    }
+
+    .full-width-container {
+        width: 100%;
+        min-height: calc(100vh - 80px);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .sell-form-wrapper {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+    }
+
+    .sell-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        color: white;
+    }
+
+    .sell-header h1 {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+    .sell-header p {
+        font-size: 1.4rem;
+        opacity: 0.9;
+    }
+
+    .sell-form-container {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .form-tabs {
+        display: flex;
+        background: var(--dark);
+    }
+
+    .form-tab {
+        flex: 1;
+        padding: 1.5rem;
+        text-align: center;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .form-tab::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 4px;
+        background: var(--secondary);
+        transition: width 0.3s ease;
+    }
+
+    .form-tab.active {
+        background: rgba(255,255,255,0.1);
+    }
+
+    .form-tab.active::after {
+        width: 80%;
+    }
+
+    .form-tab i {
+        margin-right: 10px;
+        font-size: 1.2rem;
+    }
+
+    .form-content {
+        padding: 3rem;
+        min-height: 600px;
+    }
+
+    .form-section {
+        display: none;
+        animation: fadeIn 0.5s ease;
+    }
+
+    .form-section.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5rem;
+        align-items: start;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        color: var(--dark);
+        font-size: 1.2rem;
+    }
+
+    .custom-input {
+        width: 100%;
+        padding: 1.3rem;
+        border: 2px solid var(--gray);
+        border-radius: var(--radius);
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .custom-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(138, 79, 255, 0.2);
+        outline: none;
+    }
+
+    .custom-textarea {
+        min-height: 140px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+    .option-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+    }
+
+    .option-item {
+        display: flex;
+        align-items: center;
+        padding: 1.3rem;
+        border: 2px solid var(--gray);
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        gap: 1rem;
+    }
+
+    .option-item:hover {
+        border-color: var(--primary-light);
+        transform: translateY(-2px);
+    }
+
+    .option-item.selected {
+        border-color: var(--primary);
+        background: rgba(138, 79, 255, 0.05);
+        box-shadow: 0 5px 15px rgba(138, 79, 255, 0.1);
+    }
+
+    .option-item i {
+        font-size: 1.6rem;
+        color: var(--primary);
+        width: 30px;
+        text-align: center;
+    }
+
+    .option-item span {
+        font-weight: 600;
+        color: var(--dark);
+        font-size: 1.1rem;
+    }
+
+    .price-input-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .currency-symbol {
+        position: absolute;
+        left: 1.3rem;
+        font-weight: 600;
+        color: var(--primary);
+        z-index: 2;
+        font-size: 1.2rem;
+    }
+
+    .price-input {
+        padding-left: 2.8rem;
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+
+    .price-range {
+        margin-top: 1.8rem;
+    }
+
+    .range-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.8rem;
+        color: #666;
+        font-size: 1rem;
+    }
+
+    .custom-slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 10px;
+        border-radius: 5px;
+        background: linear-gradient(to right, var(--primary-light), var(--secondary));
+        outline: none;
+    }
+
+    .custom-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--primary);
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        transition: all 0.2s ease;
+        border: 3px solid white;
+    }
+
+    .custom-slider::-webkit-slider-thumb:hover {
+        transform: scale(1.1);
+        background: var(--secondary);
+    }
+
+    .image-upload-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5rem;
+        align-items: start;
+    }
+
+    .image-upload-area {
+        border: 3px dashed var(--primary-light);
+        border-radius: var(--radius);
+        padding: 3.5rem 2.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: rgba(138, 79, 255, 0.03);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+
+    .image-upload-area:hover {
+        background: rgba(138, 79, 255, 0.08);
+        border-color: var(--primary);
+    }
+
+    .image-upload-area i {
+        font-size: 4rem;
+        color: var(--primary);
+        margin-bottom: 1.8rem;
+    }
+
+    .image-upload-area h3 {
+        margin-bottom: 0.8rem;
+        color: var(--dark);
+        font-size: 1.4rem;
+    }
+
+    .image-upload-area p {
+        color: #666;
+        font-size: 1rem;
+    }
+
+    .image-preview-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+
+    .image-preview {
+        position: relative;
+        border-radius: var(--radius);
+        overflow: hidden;
+        height: 220px;
+        background: var(--gray);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .image-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .remove-image {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: rgba(255, 0, 0, 0.9);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+    }
+
+    .remove-image:hover {
+        transform: scale(1.1);
+        background: rgba(255, 0, 0, 1);
+    }
+
+    .location-grid, .floor-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+    }
+
+    .location-option, .floor-option {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1.8rem 1.2rem;
+        border: 2px solid var(--gray);
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+    .location-option:hover, .floor-option:hover {
+        border-color: var(--primary-light);
+        transform: translateY(-3px);
+    }
+
+    .location-option.selected, .floor-option.selected {
+        border-color: var(--primary);
+        background: rgba(138, 79, 255, 0.05);
+        box-shadow: 0 5px 15px rgba(138, 79, 255, 0.1);
+    }
+
+    .location-option i, .floor-option i {
+        font-size: 2.2rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+    }
+
+    .floor-option small {
+        color: #666;
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .year-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .year-option {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1.2rem 0.8rem;
+        border: 2px solid var(--gray);
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+    .year-option:hover {
+        border-color: var(--primary-light);
+        transform: translateY(-2px);
+    }
+
+    .year-option.selected {
+        border-color: var(--primary);
+        background: rgba(138, 79, 255, 0.05);
+        box-shadow: 0 5px 15px rgba(138, 79, 255, 0.1);
+    }
+
+    .year-option div {
+        font-weight: 600;
+        font-size: 1.2rem;
+        color: var(--dark);
+    }
+
+    .year-option small {
+        color: #666;
+        margin-top: 0.4rem;
+        font-size: 0.8rem;
+    }
+
+    .review-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+
+    .review-preview h2 {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        color: var(--dark);
+        font-size: 2.2rem;
+    }
+
+    .preview-card {
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        max-width: 600px;
+        margin: 0 auto;
+        transition: all 0.3s ease;
+    }
+
+    .preview-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    .preview-image {
+        height: 280px;
+        background: linear-gradient(45deg, var(--primary-light), var(--secondary));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 4.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .preview-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .preview-content {
+        padding: 2.5rem;
+    }
+
+    .preview-title {
+        font-size: 1.8rem;
+        margin-bottom: 0.8rem;
+        color: var(--dark);
+    }
+
+    .preview-price {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 1.8rem;
+    }
+
+    .preview-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.2rem;
+        margin-bottom: 1.8rem;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    .detail-item i {
+        color: var(--primary);
+        width: 18px;
+        font-size: 1.1rem;
+    }
+
+    .preview-features {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        margin-bottom: 1.8rem;
+    }
+
+    .feature-tag {
+        background: rgba(138, 79, 255, 0.1);
+        color: var(--primary);
+        padding: 0.6rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .preview-description {
+        line-height: 1.7;
+        color: #555;
+        margin-bottom: 1.8rem;
+        font-size: 1.1rem;
+    }
+
+    .seller-info {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        padding-top: 1.8rem;
+        border-top: 1px solid var(--gray);
+        margin-top: 1.8rem;
+    }
+
+    .seller-avatar {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        background: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 1.3rem;
+    }
+
+    .form-navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 3.5rem;
+        padding-top: 2.5rem;
+        border-top: 1px solid var(--gray);
+    }
+
+    .btn {
+        padding: 1.3rem 2.8rem;
+        border: none;
+        border-radius: var(--radius);
+        font-size: 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .btn-prev {
+        background: var(--gray);
+        color: var(--text);
+    }
+
+    .btn-prev:hover {
+        background: #d1d5db;
+        transform: translateX(-3px);
+    }
+
+    .btn-next, .btn-submit {
+        background: var(--primary);
+        color: white;
+    }
+
+    .btn-next:hover, .btn-submit:hover {
+        background: var(--primary-light);
+        transform: translateX(3px);
+        box-shadow: 0 5px 15px rgba(138, 79, 255, 0.4);
+    }
+
+    .btn-submit {
+        background: linear-gradient(to right, var(--primary), var(--secondary));
+    }
+
+    .progress-bar {
+        height: 10px;
+        background: rgba(255,255,255,0.3);
+        border-radius: 5px;
+        margin: 2.5rem 0;
+        overflow: hidden;
+    }
+
+    .progress {
+        height: 100%;
+        background: linear-gradient(to right, var(--primary), var(--secondary));
+        width: 25%;
+        transition: width 0.5s ease;
+    }
+
+    .form-step-indicator {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2.5rem;
+        position: relative;
+    }
+
+    .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+        position: relative;
+        z-index: 2;
+    }
+
+    .step:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        top: 25px;
+        right: -50%;
+        width: 100%;
+        height: 4px;
+        background: rgba(255,255,255,0.3);
+        z-index: 1;
+    }
+
+    .step.active:not(:last-child)::after {
+        background: white;
+    }
+
+    .step-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        z-index: 2;
+        transition: all 0.3s ease;
+        color: white;
+        border: 2px solid transparent;
+        font-size: 1.2rem;
+    }
+
+    .step.active .step-circle {
+        background: white;
+        color: var(--primary);
+        box-shadow: 0 5px 15px rgba(255,255,255,0.4);
+        border-color: white;
+    }
+
+    .step-label {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.8);
+    }
+
+    .step.active .step-label {
+        color: white;
+    }
+
+    @media (max-width: 1200px) {
+        .full-width-container {
+            padding: 1.5rem;
+        }
+        
+        .form-content {
+            padding: 2.5rem;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        
+        .image-upload-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .location-grid, .floor-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .year-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .full-width-container {
+            padding: 1rem;
+        }
+        
+        .form-content {
+            padding: 2rem;
+        }
+        
+        .form-tabs {
+            flex-direction: column;
+        }
+        
+        .form-tab {
+            padding: 1.2rem;
+        }
+        
+        .location-grid, .floor-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .year-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .btn {
+            padding: 1.1rem 2rem;
+            font-size: 1.1rem;
+        }
+        
+        .preview-details {
+            grid-template-columns: 1fr;
+        }
+        
+        .sell-header h1 {
+            font-size: 2.5rem;
+        }
+        
+        .sell-header p {
+            font-size: 1.2rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .full-width-container {
+            padding: 0.5rem;
+        }
+        
+        .form-content {
+            padding: 1.5rem;
+        }
+        
+        .year-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .btn {
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+        }
+        
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+        
+        .step-label {
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tab navigation
+        const tabs = document.querySelectorAll('.form-tab');
+        const sections = document.querySelectorAll('.form-section');
+        const nextButtons = document.querySelectorAll('.btn-next');
+        const prevButtons = document.querySelectorAll('.btn-prev');
+        const progressBar = document.getElementById('form-progress');
+        const steps = document.querySelectorAll('.step');
+        
+        // Form elements
+        const priceSlider = document.getElementById('price-slider');
+        const priceInput = document.querySelector('input[name="price"]');
+        const productName = document.querySelector('input[name="product_name"]');
+        const productDescription = document.querySelector('textarea[name="product_description"]');
+        const roomNumber = document.querySelector('input[name="room_number"]');
+        const contactNumber = document.querySelector('input[name="contact_number"]');
+        const campusLocation = document.getElementById('campus-location');
+        const floorLevel = document.getElementById('floor-level');
+        const academicYear = document.getElementById('academic-year');
+        const category = document.getElementById('category');
+        const condition = document.getElementById('condition');
+        const negotiable = document.getElementById('negotiable');
+        
+        // Preview elements
+        const previewTitle = document.getElementById('preview-title');
+        const previewPrice = document.getElementById('preview-price');
+        const previewLocation = document.getElementById('preview-location');
+        const previewFloor = document.getElementById('preview-floor');
+        const previewRoomNumber = document.getElementById('preview-room-number');
+        const previewYear = document.getElementById('preview-year');
+        const previewDescription = document.getElementById('preview-description');
+        const previewMainImage = document.getElementById('preview-main-image');
+        const previewCategory = document.getElementById('preview-category');
+        const previewCondition = document.getElementById('preview-condition');
+        const previewNegotiable = document.getElementById('preview-negotiable');
+        
+        // Selection elements
+        const locationOptions = document.querySelectorAll('.location-option');
+        const floorOptions = document.querySelectorAll('.floor-option');
+        const yearOptions = document.querySelectorAll('.year-option');
+        const optionItems = document.querySelectorAll('.option-item');
+        
+        // Image upload
+        const imageUpload = document.getElementById('image-upload');
+        const fileInput = document.getElementById('file-input');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        
+        // Initialize
+        updateProgress(1);
+        
+        // Tab click event
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+                switchTab(tabId);
+            });
+        });
+        
+        // Next button click event
+        nextButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const nextTab = this.getAttribute('data-next');
+                switchTab(nextTab);
+                
+                // Update preview when moving to review section
+                if (nextTab === 'review') {
+                    updatePreview();
+                }
+            });
+        });
+        
+        // Previous button click event
+        prevButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                if (!this.disabled) {
+                    const prevTab = this.getAttribute('data-prev');
+                    switchTab(prevTab);
+                }
+            });
+        });
+        
+        // Price slider and input sync
+        priceSlider.addEventListener('input', function() {
+            priceInput.value = this.value;
+            if (previewPrice) {
+                previewPrice.textContent = '$' + this.value;
+            }
+        });
+        
+        priceInput.addEventListener('input', function() {
+            priceSlider.value = this.value;
+            if (previewPrice) {
+                previewPrice.textContent = '$' + this.value;
+            }
+        });
+        
+        // Product name event
+        productName.addEventListener('input', function() {
+            if (previewTitle) {
+                previewTitle.textContent = this.value || 'Product Name';
+            }
+        });
+        
+        // Product description event
+        productDescription.addEventListener('input', function() {
+            if (previewDescription) {
+                previewDescription.textContent = this.value || 'Product description will appear here...';
+            }
+        });
+        
+        // Room number event
+        roomNumber.addEventListener('input', function() {
+            if (previewRoomNumber) {
+                previewRoomNumber.textContent = 'Room ' + (this.value || '101');
+            }
+        });
+        
+        // Option selection
+        optionItems.forEach(option => {
+            option.addEventListener('click', function() {
+                const parent = this.parentElement;
+                const options = parent.querySelectorAll('.option-item');
+                options.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                // Set the hidden input value
+                const inputId = parent.parentElement.querySelector('input[type="hidden"]').id;
+                document.getElementById(inputId).value = this.getAttribute('data-value');
+                
+                // Update preview
+                if (previewCategory && inputId === 'category') {
+                    previewCategory.textContent = this.querySelector('span').textContent;
+                }
+                if (previewCondition && inputId === 'condition') {
+                    previewCondition.textContent = this.querySelector('span').textContent;
+                }
+                if (previewNegotiable && inputId === 'negotiable') {
+                    previewNegotiable.textContent = this.getAttribute('data-value') === 'yes' ? 'Negotiable' : 'Fixed Price';
+                }
+            });
+        });
+        
+        // Location selection
+        locationOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                locationOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                campusLocation.value = this.getAttribute('data-location');
+                
+                if (previewLocation) {
+                    const locationText = this.querySelector('div').textContent;
+                    previewLocation.textContent = locationText;
+                }
+            });
+        });
+        
+        // Floor selection
+        floorOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                floorOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                floorLevel.value = this.getAttribute('data-floor');
+                
+                if (previewFloor) {
+                    const floorText = this.querySelector('div').textContent;
+                    previewFloor.textContent = floorText;
+                }
+            });
+        });
+        
+        // Academic year selection
+        yearOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                yearOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                academicYear.value = this.getAttribute('data-year');
+                
+                if (previewYear) {
+                    const yearText = this.querySelector('div').textContent;
+                    previewYear.textContent = yearText;
+                }
+            });
+        });
+        
+        // Image upload events
+        imageUpload.addEventListener('click', function() {
+            fileInput.click();
+        });
+        
+        fileInput.addEventListener('change', function(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                handleImageUpload(files[0]); // Only take the first file
+            }
+        });
+        
+        imageUpload.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.style.background = 'rgba(138, 79, 255, 0.15)';
+            this.style.borderColor = 'var(--primary)';
+        });
+        
+        imageUpload.addEventListener('dragleave', function() {
+            this.style.background = 'rgba(138, 79, 255, 0.03)';
+            this.style.borderColor = 'var(--primary-light)';
+        });
+        
+        imageUpload.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.style.background = 'rgba(138, 79, 255, 0.03)';
+            this.style.borderColor = 'var(--primary-light)';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleImageUpload(files[0]); // Only take the first file
+            }
+        });
+        
+        // Handle single image upload
+        function handleImageUpload(file) {
+            if (file.type.match('image.*')) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size must be less than 5MB');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const imageData = e.target.result;
+                    createImagePreview(imageData);
+                };
+                
+                reader.readAsDataURL(file);
+            } else {
+                alert('Please select an image file');
+            }
+            
+            // Reset file input to allow uploading the same file again
+            fileInput.value = '';
+        }
+        
+        // Create single image preview
+        function createImagePreview(imageData) {
+            // Clear any existing preview
+            imagePreviewContainer.innerHTML = '';
+            
+            const preview = document.createElement('div');
+            preview.className = 'image-preview';
+            
+            const img = document.createElement('img');
+            img.src = imageData;
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-image';
+            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            removeBtn.addEventListener('click', function() {
+                preview.remove();
+                fileInput.value = '';
+            });
+            
+            preview.appendChild(img);
+            preview.appendChild(removeBtn);
+            imagePreviewContainer.appendChild(preview);
+        }
+        
+        // Update preview card
+        function updatePreview() {
+            previewTitle.textContent = productName.value || 'Product Name';
+            previewPrice.textContent = '$' + priceInput.value;
+            previewDescription.textContent = productDescription.value || 'Product description will appear here...';
+            previewRoomNumber.textContent = 'Room ' + (roomNumber.value || '101');
+            
+            // Update main preview image
+            if (imagePreviewContainer.children.length > 0) {
+                const previewImg = imagePreviewContainer.querySelector('img');
+                if (previewImg) {
+                    previewMainImage.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = previewImg.src;
+                    previewMainImage.appendChild(img);
+                }
+            } else {
+                previewMainImage.innerHTML = '<i class="fas fa-box"></i>';
+            }
+        }
+        
+        // Switch tab function
+        function switchTab(tabId) {
+            // Update tabs
+            tabs.forEach(tab => {
+                if (tab.getAttribute('data-tab') === tabId) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            // Update sections
+            sections.forEach(section => {
+                if (section.id === `${tabId}-section`) {
+                    section.classList.add('active');
+                } else {
+                    section.classList.remove('active');
+                }
+            });
+            
+            // Update progress
+            let progress = 0;
+            switch(tabId) {
+                case 'product-details': progress = 25; break;
+                case 'price-image': progress = 50; break;
+                case 'seller-details': progress = 75; break;
+                case 'review': progress = 100; break;
+            }
+            updateProgress(progress);
+            
+            // Update step indicators
+            let stepIndex = 0;
+            switch(tabId) {
+                case 'product-details': stepIndex = 0; break;
+                case 'price-image': stepIndex = 1; break;
+                case 'seller-details': stepIndex = 2; break;
+                case 'review': stepIndex = 3; break;
+            }
+            
+            steps.forEach((step, index) => {
+                if (index <= stepIndex) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+        }
+        
+        // Update progress bar
+        function updateProgress(percent) {
+            progressBar.style.width = `${percent}%`;
+        }
+    });
+</script>
+{% endblock %}

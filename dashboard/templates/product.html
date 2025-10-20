@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} | Product Details{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root {
+  --bg-body: #f9f9fb;
+  --text: #222;
+  --accent: #0078ff;
+  --accent-light: #5cabff;
+  --icon: #ff9f00;
+  --glass: rgba(255,255,255,0.6);
+}
+
+[data-theme='dark'] {
+  --bg-body: #0d1117;
+  --text: #e6edf3;
+  --accent: #00e1ff;
+  --accent-light: #00b3ff;
+  --icon: #ffb547;
+  --glass: rgba(255,255,255,0.05);
+}
+
+body {
+  background: var(--bg-body);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* ---------- Main Container ---------- */
+.product-container {
+  display: flex;
+  max-width: 1500px; /* increased width */
+  width: 95%;
+  height: 100vh;
+  margin: 0 auto;
+  border-radius: 20px;
+  background: var(--glass);
+  box-shadow: 0 0 25px rgba(0,0,0,0.1);
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+}
+
+/* ---------- Left Image Side ---------- */
+.product-image-side {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at top left, var(--accent-light), transparent 70%);
+}
+
+.product-image-side::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 0deg, var(--accent), transparent, var(--accent-light));
+  animation: glitter 8s linear infinite;
+  opacity: 0.2;
+}
+
+@keyframes glitter {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.product-image {
+  width: 80%;
+  max-height: 90%;
+  object-fit: contain;
+  border-radius: 15px;
+  transition: transform 0.5s ease;
+  box-shadow: 0 0 25px rgba(0,0,0,0.25);
+  z-index: 2;
+}
+
+.product-image:hover {
+  transform: scale(1.05);
+}
+
+/* ---------- Right Info Side ---------- */
+.product-info-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 50px 30px; /* slightly reduced padding to increase content width */
+  gap: 20px;
+  overflow: hidden; /* no scroll */
+}
+
+/* ---------- Title & Meta ---------- */
+.product-title {
+  font-size: 2rem;
+  color: var(--accent);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.product-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.meta-item i {
+  color: var(--icon);
+}
+
+/* ---------- Info Grid ---------- */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.info-box {
+  background: rgba(255,255,255,0.05);
+  padding: 15px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.info-box:hover {
+  background: rgba(255,255,255,0.1);
+  transform: translateY(-5px);
+}
+
+.info-title {
+  font-size: 0.85rem;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.info-content {
+  font-weight: 500;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+/* ---------- Price ---------- */
+.price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 15px 0;
+  text-shadow: 0 0 10px var(--accent-light);
+}
+
+/* ---------- Buttons ---------- */
+.buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 12px 25px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-back {
+  background: linear-gradient(90deg, #bbb, #888);
+  color: #fff;
+}
+
+.btn-contact {
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  color: #fff;
+  box-shadow: 0 0 10px var(--accent-light);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0%,100% { box-shadow: 0 0 10px var(--accent-light); }
+  50% { box-shadow: 0 0 20px var(--accent); }
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1200px) {
+  .product-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .product-image-side {
+    width: 100%;
+    height: 50vh;
+  }
+
+  .product-info-side {
+    width: 100%;
+    padding: 30px 20px;
+    overflow: visible;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="product-container">
+  <!-- Left Image -->
+  <div class="product-image-side">
+    {% if product.image %}
+      <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+    {% else %}
+      <img src="https://via.placeholder.com/500x500?text=No+Image" alt="No Image" class="product-image">
+    {% endif %}
+  </div>
+
+  <!-- Right Info -->
+  <div class="product-info-side">
+    <h1 class="product-title"><i class="fa-solid fa-box"></i> {{ product.name }}</h1>
+
+    <div class="product-meta">
+      <div class="meta-item"><i class="fa-solid fa-eye"></i>{{ product.views }} views</div>
+      <div class="meta-item"><i class="fa-solid fa-calendar"></i>{{ product.created_at|date:"M d, Y" }}</div>
+      <div class="meta-item"><i class="fa-solid fa-tag"></i>{{ product.get_category_display }}</div>
+    </div>
+
+    <div class="price">₹{{ product.price }}</div>
+
+    <div class="info-grid">
+      <div class="info-box">
+        <div class="info-title"><i class="fa-solid fa-location-dot"></i> Location</div>
+        <div class="info-content">{{ product.get_location_display }}</div>
+      </div>
+      <div class="info-box">
+        <div class="info-title"><i class="fa-solid fa-layer-group"></i> Floor</div>
+        <div class="info-content">{{ product.get_floor_display }}</div>
+      </div>
+      <div class="info-box">
+        <div class="info-title"><i class="fa-solid fa-door-open"></i> Room</div>
+        <div class="info-content">{{ product.room_number|default:"N/A" }}</div>
+      </div>
+      <div class="info-box">
+        <div class="info-title"><i class="fa-solid fa-building"></i> Wing</div>
+        <div class="info-content">{{ product.wing|default:"N/A" }}</div>
+      </div>
+    </div>
+
+    {% if product.description %}
+    <div class="info-box" style="grid-column: span 2;">
+      <div class="info-title"><i class="fa-solid fa-align-left"></i> Description</div>
+      <div class="info-content">{{ product.description }}</div>
+    </div>
+    {% endif %}
+
+    <div class="buttons">
+      <button class="btn btn-back" onclick="window.history.back()">
+        <i class="fa-solid fa-arrow-left"></i> Back
+      </button>
+      <button class="btn btn-contact" onclick="contactSeller()">
+        <i class="fa-solid fa-phone"></i> Contact
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+function contactSeller() {
+  const phone = '{{ product.contact_number|default:"N/A" }}';
+  alert(`📞 Contact Seller: ${phone}`);
+}
+</script>
+{% endblock %}

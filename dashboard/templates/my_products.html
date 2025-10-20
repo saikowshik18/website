@@ -1,0 +1,1015 @@
+{% extends 'base.html' %}
+
+{% block title %}My Products | SecondLove{% endblock %}
+
+{% block extra_css %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --primary-gradient: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+    --secondary-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --card-shadow-hover: 0 8px 40px rgba(0, 0, 0, 0.12);
+    --glow-primary: 0 0 20px rgba(147, 51, 234, 0.3);
+    --glow-secondary: 0 0 20px rgba(59, 130, 246, 0.3);
+    --glow-danger: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+body.dark-mode {
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    --card-shadow-hover: 0 8px 40px rgba(0, 0, 0, 0.3);
+}
+
+* {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ====== Grid ====== */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* ====== Product Card Animations ====== */
+.product-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 380px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: cardSlideIn 0.6s ease forwards;
+    box-shadow: var(--card-shadow);
+}
+
+.product-card:nth-child(1) { animation-delay: 0.1s; }
+.product-card:nth-child(2) { animation-delay: 0.2s; }
+.product-card:nth-child(3) { animation-delay: 0.3s; }
+.product-card:nth-child(4) { animation-delay: 0.4s; }
+.product-card:nth-child(5) { animation-delay: 0.5s; }
+.product-card:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes cardSlideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.product-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--card-shadow-hover);
+    border-color: var(--primary);
+}
+
+.product-card.deleting {
+    animation: cardDelete 0.5s ease forwards;
+}
+
+@keyframes cardDelete {
+    to {
+        opacity: 0;
+        transform: translateX(100px) scale(0.8);
+    }
+}
+
+/* ====== Image ====== */
+.product-image-container {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    flex-shrink: 0;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.4s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.1);
+    filter: brightness(1.05);
+}
+
+/* ====== Card Body ====== */
+.card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    gap: 1rem;
+}
+
+.product-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-price {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.product-meta {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
+}
+
+.product-meta i {
+    margin-right: 0.25rem;
+    opacity: 0.7;
+}
+
+/* ====== Enhanced Buttons ====== */
+.product-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: auto;
+    z-index: 2;
+}
+
+.btn-edit, .btn-delete {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    color: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-edit::before, .btn-delete::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transition: all 0.6s ease;
+    transform: translate(-50%, -50%);
+}
+
+.btn-edit:hover::before, .btn-delete:hover::before {
+    width: 120px;
+    height: 120px;
+}
+
+.btn-edit {
+    background: var(--secondary-gradient);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.btn-edit:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glow-secondary);
+}
+
+.btn-delete {
+    background: var(--danger-gradient);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+.btn-delete:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glow-danger);
+}
+
+/* Loading states */
+.btn-edit.loading, .btn-delete.loading {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.btn-edit.loading::after, .btn-delete.loading::after {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 8px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ====== Responsive ====== */
+@media (max-width: 1200px) { 
+    .product-grid { 
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 1.5rem;
+    } 
+}
+
+@media (max-width: 992px) { 
+    .product-grid { 
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 1.5rem;
+    } 
+}
+
+@media (max-width: 768px) { 
+    .product-grid { 
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 1rem;
+    }
+    
+    .product-card {
+        min-height: 350px;
+    }
+    
+    .product-image-container {
+        height: 160px;
+    }
+}
+
+@media (max-width: 576px) { 
+    .product-grid { 
+        grid-template-columns: 1fr; 
+        gap: 1rem;
+    }
+    
+    .product-buttons {
+        flex-direction: column;
+    }
+}
+
+/* ====== PREMIUM MODAL STYLES ====== */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(12px);
+    z-index: 9998;
+    animation: overlayFadeIn 0.4s ease-out;
+}
+
+@keyframes overlayFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-container {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    width: 90%;
+    max-width: 500px;
+    max-height: 85vh;
+    background: var(--card-bg);
+    border-radius: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    overflow: hidden;
+    animation: modalSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    border: 1px solid var(--border);
+}
+
+@keyframes modalSlideIn {
+    to {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+.modal-container.closing {
+    animation: modalSlideOut 0.3s ease-in forwards;
+}
+
+@keyframes modalSlideOut {
+    to {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0;
+    }
+}
+
+.modal-header {
+    background: var(--primary-gradient);
+    padding: 2rem 2rem 1.5rem;
+    position: relative;
+    text-align: center;
+}
+
+.modal-title {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.modal-close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg) scale(1.1);
+}
+
+.modal-body {
+    padding: 2rem;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+/* Form Elements */
+.form-group {
+    margin-bottom: 1.5rem;
+    animation: formSlideUp 0.6s ease-out;
+    animation-fill-mode: both;
+}
+
+.form-group:nth-child(1) { animation-delay: 0.1s; }
+.form-group:nth-child(2) { animation-delay: 0.15s; }
+.form-group:nth-child(3) { animation-delay: 0.2s; }
+.form-group:nth-child(4) { animation-delay: 0.25s; }
+.form-group:nth-child(5) { animation-delay: 0.3s; }
+.form-group:nth-child(6) { animation-delay: 0.35s; }
+
+@keyframes formSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    display: block;
+    color: var(--text);
+    font-size: 0.95rem;
+}
+
+.modal-container input, 
+.modal-container textarea, 
+.modal-container select { 
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border-radius: 14px;
+    border: 2px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+.modal-container input:focus, 
+.modal-container textarea:focus, 
+.modal-container select:focus { 
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.1);
+    transform: translateY(-2px);
+}
+
+.modal-container textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Enhanced Chip Styles */
+.chips-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.chip {
+    padding: 0.75rem 1.25rem;
+    border-radius: 50px;
+    border: 2px solid var(--border);
+    background: var(--card-bg);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+    position: relative;
+    overflow: hidden;
+}
+
+.chip::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--primary-gradient);
+    transition: left 0.4s ease;
+    z-index: -1;
+}
+
+.chip:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.2);
+}
+
+.chip.selected {
+    background: var(--primary-gradient);
+    color: white;
+    border-color: transparent;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(147, 51, 234, 0.3);
+}
+
+.chip.selected::before {
+    left: 0;
+}
+
+/* Image Preview */
+.image-preview-container {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.6s ease;
+}
+
+.image-preview { 
+    width: 100%;
+    max-width: 300px;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 16px;
+    border: 2px solid var(--border);
+    transition: all 0.4s ease;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.image-preview:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+}
+
+/* Submit Button */
+.submit-btn {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    padding: 1.25rem 2rem;
+    border-radius: 16px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 1rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(147, 51, 234, 0.3);
+}
+
+.submit-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.6s ease;
+}
+
+.submit-btn:hover::before {
+    left: 100%;
+}
+
+.submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(147, 51, 234, 0.4);
+}
+
+.submit-btn:active {
+    transform: translateY(-1px);
+}
+
+/* ====== Empty State ====== */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-light);
+    animation: fadeIn 0.6s ease;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.empty-state h3 {
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--text);
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    opacity: 0.8;
+}
+
+/* ====== Page Header ====== */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--border);
+    animation: fadeIn 0.6s ease;
+}
+
+.page-title {
+    font-weight: 800;
+    font-size: 2.5rem;
+    color: var(--text);
+    margin: 0;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.add-product-btn {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.add-product-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.add-product-btn:hover::before {
+    left: 100%;
+}
+
+.add-product-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glow-primary);
+    text-decoration: none;
+    color: white;
+}
+
+/* Utility Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Tooltip styles */
+[data-tooltip] {
+    position: relative;
+}
+
+[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: var(--bg);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+[data-tooltip]:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-5px);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">My Products</h1>
+    <a href="{% url 'sell_product' %}" class="add-product-btn">
+        <i class="fas fa-plus"></i> Add New Product
+    </a>
+</div>
+
+{% if products %}
+<div class="product-grid">
+    {% for product in products %}
+    <div class="product-card" id="product-{{ product.id }}">
+        <div class="product-image-container">
+            <a href="{% url 'product_detail' product.id %}">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" class="product-image" alt="{{ product.name }}">
+                {% else %}
+                    <div class="d-flex align-items-center justify-content-center h-100 bg-light">
+                        <i class="fas fa-image fa-2x text-muted"></i>
+                    </div>
+                {% endif %}
+            </a>
+        </div>
+
+        <div class="card-body">
+            <div>
+                <h5 class="product-name">{{ product.name }}</h5>
+                <div class="product-price">₹{{ product.price }}</div>
+            </div>
+            
+            <div class="product-meta">
+                <span data-tooltip="Location"><i class="fas fa-map-marker-alt"></i> {{ product.location|title }}</span>
+                <span data-tooltip="Date Added"><i class="fas fa-clock"></i> {{ product.created_at|date:"M d" }}</span>
+            </div>
+            
+            <div class="product-buttons">
+                <button class="btn-edit"
+                        data-id="{{ product.id }}"
+                        data-name="{{ product.name }}"
+                        data-price="{{ product.price }}"
+                        data-description="{{ product.description }}"
+                        data-academic_year="{{ product.academic_year }}"
+                        data-category="{{ product.category }}"
+                        data-location="{{ product.location }}"
+                        data-floor="{{ product.floor }}"
+                        data-room="{{ product.room_number }}"
+                        data-wing="{{ product.wing }}"
+                        data-phone="{{ product.contact_number }}"
+                        data-image="{% if product.image %}{{ product.image.url }}{% endif %}"
+                        data-tooltip="Edit Product">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="btn-delete" 
+                        data-id="{{ product.id }}"
+                        data-tooltip="Delete Product">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-box-open"></i>
+    <h3>No Products Yet</h3>
+    <p>You haven't listed any products for sale.</p>
+    <a href="{% url 'sell_product' %}" class="add-product-btn" style="margin-top: 1rem;">
+        <i class="fas fa-plus"></i> List Your First Product
+    </a>
+</div>
+{% endif %}
+
+<!-- ====== PREMIUM EDIT MODAL ====== -->
+<div class="modal-overlay" id="editModalOverlay"></div>
+
+<div class="modal-container" id="editModal">
+    <div class="modal-header">
+        <h3 class="modal-title">Edit Product</h3>
+        <button class="modal-close-btn" onclick="closeModal()">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+        <form id="editForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>Product Name</label>
+                <input type="text" id="editName" name="name" required placeholder="Enter product name">
+            </div>
+
+            <div class="form-group">
+                <label>Price (₹)</label>
+                <input type="number" id="editPrice" name="price" min="0" step="0.01" required placeholder="0.00">
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="editDescription" name="description" rows="3" required placeholder="Describe your product..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Academic Year</label>
+                <input type="text" id="editAcademicYear" name="academic_year" required placeholder="e.g., 2023-2024">
+            </div>
+
+            <div class="form-group">
+                <label>Contact Number</label>
+                <input type="tel" id="editPhone" name="contact_number" required placeholder="Your contact number">
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+                <div class="chips-container" id="categoryChips">
+                    <div class="chip" data-value="electronics">Electronics</div>
+                    <div class="chip" data-value="books">Books</div>
+                    <div class="chip" data-value="clothing">Clothing</div>
+                    <div class="chip" data-value="furniture">Furniture</div>
+                    <div class="chip" data-value="other">Other</div>
+                </div>
+                <input type="hidden" id="editCategory" name="category" required>
+            </div>
+
+            <div class="form-group">
+                <label>Location</label>
+                <div class="chips-container" id="locationChips">
+                    <div class="chip" data-value="bh1 front">BH1 Front</div>
+                    <div class="chip" data-value="bh1 back">BH1 Back</div>
+                    <div class="chip" data-value="gh1 front">GH1 Front</div>
+                    <div class="chip" data-value="gh1 back">GH1 Back</div>
+                    <div class="chip" data-value="bh2 front">BH2 Front</div>
+                    <div class="chip" data-value="bh2 back">BH2 Back</div>
+                    <div class="chip" data-value="gh2 front">GH2 Front</div>
+                    <div class="chip" data-value="gh2 back">GH2 Back</div>
+                    <div class="chip" data-value="old campus">Old Campus</div>
+                </div>
+                <input type="hidden" id="editLocation" name="location" required>
+            </div>
+
+            <div class="form-group">
+                <label>Floor</label>
+                <div class="chips-container" id="floorChips">
+                    <div class="chip" data-value="ground">Ground</div>
+                    <div class="chip" data-value="first">First</div>
+                    <div class="chip" data-value="second">Second</div>
+                    <div class="chip" data-value="third">Third</div>
+                </div>
+                <input type="hidden" id="editFloor" name="floor" required>
+            </div>
+
+            <div class="form-group">
+                <label>Room Number</label>
+                <input type="text" id="editRoom" name="room_number" placeholder="e.g., 101">
+            </div>
+
+            <div class="form-group">
+                <label>Wing</label>
+                <input type="text" id="editWing" name="wing" placeholder="e.g., A, B, C">
+            </div>
+
+            <div class="form-group">
+                <label>Product Image</label>
+                <div class="image-preview-container">
+                    <img id="imagePreview" class="image-preview" src="" alt="Preview" style="display:none;">
+                </div>
+                <input type="file" id="editImage" name="image" accept="image/*" onchange="previewImage(this)">
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-save"></i> Update Product
+            </button>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+function closeModal(){ 
+    const modal = document.getElementById('editModal');
+    const overlay = document.getElementById('editModalOverlay');
+    
+    modal.classList.add('closing');
+    overlay.style.animation = 'overlayFadeIn 0.3s ease reverse';
+    
+    setTimeout(() => {
+        modal.style.display = 'none';
+        overlay.style.display = 'none';
+        modal.classList.remove('closing');
+    }, 300);
+}
+
+function openModal() {
+    const modal = document.getElementById('editModal');
+    const overlay = document.getElementById('editModalOverlay');
+    
+    overlay.style.display = 'block';
+    modal.style.display = 'block';
+}
+
+function previewImage(input) {
+    const preview = document.getElementById('imagePreview');
+    const file = input.files[0];
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            preview.style.animation = 'fadeIn 0.6s ease';
+        }
+        reader.readAsDataURL(file);
+    } else {
+        preview.style.display = 'none';
+    }
+}
+
+function selectChip(chipsContainer, hiddenInput, value) {
+    const chips = chipsContainer.querySelectorAll('.chip');
+    chips.forEach(chip => {
+        chip.classList.remove('selected');
+        if (chip.dataset.value === value) {
+            chip.classList.add('selected');
+        }
+    });
+    hiddenInput.value = value;
+}
+
+$(document).ready(function(){
+    // Initialize chip functionality
+    function initializeChips(containerId, hiddenInputId) {
+        const container = document.getElementById(containerId);
+        const hiddenInput = document.getElementById(hiddenInputId);
+        const chips = container.querySelectorAll('.chip');
+        
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                chips.forEach(c => c.classList.remove('selected'));
+                chip.classList.add('selected');
+                hiddenInput.value = chip.dataset.value;
+            });
+        });
+    }
+    
+    // Initialize all chip groups
+    initializeChips('categoryChips', 'editCategory');
+    initializeChips('locationChips', 'editLocation');
+    initializeChips('floorChips', 'editFloor');
+
+    // ====== Delete Product ======
+    $(".btn-delete").click(function(e){
+        e.preventDefault();
+        const $btn = $(this);
+        const id = $btn.data("id");
+        const card = $("#product-"+id);
+        
+        if(confirm("Are you sure you want to delete this product? This action cannot be undone.")){
+            $btn.addClass('loading').html('<i class="fas fa-trash"></i> Deleting...');
+            
+            $.ajax({
+                url: "{% url 'delete_product_ajax' %}",
+                type: "POST",
+                data: {
+                    'product_id': id,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(res){
+                    if(res.status === "success"){
+                        card.addClass('deleting');
+                        setTimeout(() => {
+                            card.remove();
+                            if($(".product-card").length === 0){
+                                location.reload();
+                            }
+                        }, 500);
+                    } else {
+                        alert("Failed to delete product. Please try again.");
+                        $btn.removeClass('loading').html('<i class="fas fa-trash"></i> Delete');
+                    }
+                },
+                error: function(){
+                    alert("Error deleting product. Please try again.");
+                    $btn.removeClass('loading').html('<i class="fas fa-trash"></i> Delete');
+                }
+            });
+        }
+    });
+
+    // ====== Edit Product ======
+    $(".btn-edit").click(function(){
+        const data = $(this).data();
+        $("#editForm").attr("action", `/dashboard/update-product/${data.id}/`);
+        
+        // Populate form fields
+        $("#editName").val(data.name);
+        $("#editPrice").val(data.price);
+        $("#editDescription").val(data.description);
+        $("#editAcademicYear").val(data.academic_year);
+        $("#editPhone").val(data.phone);
+        $("#editRoom").val(data.room);
+        $("#editWing").val(data.wing);
+        
+        // Set chip selections
+        selectChip(document.getElementById('categoryChips'), document.getElementById('editCategory'), data.category);
+        selectChip(document.getElementById('locationChips'), document.getElementById('editLocation'), data.location);
+        selectChip(document.getElementById('floorChips'), document.getElementById('editFloor'), data.floor);
+        
+        // Set image preview
+        if(data.image) {
+            $("#imagePreview").attr("src", data.image).show();
+        } else {
+            $("#imagePreview").hide();
+        }
+        
+        // Show modal with premium animation
+        openModal();
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('editModalOverlay').addEventListener('click', closeModal);
+
+    // Close modal with Escape key
+    $(document).keyup(function(e) {
+        if (e.key === "Escape") {
+            closeModal();
+        }
+    });
+});
+</script>
+{% endblock %}

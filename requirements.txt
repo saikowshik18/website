@@ -1,0 +1,13 @@
+asgiref==3.8.1
+backports.zoneinfo==0.2.1
+cache==1.0.3
+Django==4.2.24
+django-environ==0.11.2
+gunicorn==23.0.0
+packaging==25.0
+pillow==10.4.0
+psycopg2-binary==2.9.10
+sqlparse==0.5.3
+typing_extensions==4.13.2
+views==0.3
+whitenoise==6.7.0

@@ -1,0 +1,22 @@
+---sell page---
+# product name
+# product price
+# catagory
+# discription
+# location - BH1 front,BH1 back,GH1 front,GH1 back,BH2 front,BH2 back,GH2 front,GH2 back,old campus
+# floor - ground,first,second,third
+# room number 
+# wing
+# contact number 
+# views
+# image
+# created at
+# updated at
+# acadamic year
+
+
+
+--- wish list table---
+# user
+# product id
+# 

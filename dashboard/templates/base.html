@@ -1,0 +1,1321 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SecondLove{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* 🌙 ====== GLOBAL BASE STYLES ====== */
+        :root {
+            --bg: #ffffff;
+            --text: #1a1a1a;
+            --text-light: #666;
+            --primary: #9333ea;
+            --primary-light: #a855f7;
+            --primary-dark: #7e22ce;
+            --card-bg: #ffffff;
+            --border: #e5e7eb;
+            --footer-bg: #f8fafc;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --chip-bg: #f8fafc;
+            --chip-active: #f3e8ff;
+            --glass-bg: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --gradient-primary: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+            --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            --glow-home: 0 0 20px rgba(59, 130, 246, 0.5);
+            --glow-products: 0 0 20px rgba(147, 51, 234, 0.5);
+            --glow-sell: 0 0 20px rgba(16, 185, 129, 0.5);
+            --glow-wishlist: 0 0 20px rgba(239, 68, 68, 0.5);
+        }
+
+        body.dark-mode {
+            --bg: #0f0f0f;
+            --text: #f5f5f5;
+            --text-light: #a3a3a3;
+            --card-bg: #1a1a1a;
+            --border: #333;
+            --footer-bg: #111;
+            --shadow: rgba(255, 255, 255, 0.05);
+            --chip-bg: #262626;
+            --chip-active: #4c1d95;
+            --glass-bg: rgba(26, 26, 26, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        a { 
+            text-decoration: none; 
+            color: inherit; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        a:hover { 
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        /* ====== PREMIUM NAVBAR ====== */
+        .navbar {
+            background: var(--glass-bg);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 0.8rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 30px var(--shadow);
+        }
+
+        .navbar.scrolled {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow: 0 8px 32px var(--shadow);
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+
+        .heart-beat {
+            animation: heartBeat 2s ease-in-out infinite;
+            color: #ef4444;
+            filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.5));
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { 
+                transform: scale(1);
+                color: #ef4444;
+            }
+            15% { 
+                transform: scale(1.3);
+                color: #f87171;
+            }
+            30% { 
+                transform: scale(1.1);
+                color: #ef4444;
+            }
+            45% { 
+                transform: scale(1.4);
+                color: #fca5a5;
+            }
+            60% { 
+                transform: scale(1.2);
+                color: #ef4444;
+            }
+            75% { 
+                transform: scale(1.25);
+                color: #f87171;
+            }
+        }
+
+        .navbar-brand:hover .heart-beat {
+            animation: heartBeat 1s ease-in-out infinite;
+        }
+
+        .navbar-toggler {
+            border: none;
+            background: transparent;
+            padding: 0.5rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-toggler:hover {
+            background: var(--chip-bg);
+            transform: scale(1.1);
+        }
+
+        .navbar-nav .nav-link {
+            color: var(--text);
+            font-weight: 500;
+            margin: 0 0.75rem;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-nav .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--primary);
+            background: var(--chip-bg);
+            transform: translateY(-2px);
+        }
+
+        .navbar-nav .nav-link:hover::before {
+            width: 80%;
+        }
+
+        /* Active Navigation Glow Effects */
+        .nav-link.active-home {
+            background: rgba(59, 130, 246, 0.1) !important;
+            color: #3b82f6 !important;
+            box-shadow: var(--glow-home);
+            animation: homeGlow 2s ease-in-out infinite;
+        }
+
+        .nav-link.active-products {
+            background: rgba(147, 51, 234, 0.1) !important;
+            color: var(--primary) !important;
+            box-shadow: var(--glow-products);
+            animation: productsGlow 2s ease-in-out infinite;
+        }
+
+        .nav-link.active-sell {
+            background: rgba(16, 185, 129, 0.1) !important;
+            color: #10b981 !important;
+            box-shadow: var(--glow-sell);
+            animation: sellGlow 2s ease-in-out infinite;
+        }
+
+        .nav-link.active-wishlist {
+            background: rgba(239, 68, 68, 0.1) !important;
+            color: #ef4444 !important;
+            box-shadow: var(--glow-wishlist);
+            animation: wishlistGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes homeGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.8); }
+        }
+
+        @keyframes productsGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(147, 51, 234, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(147, 51, 234, 0.8); }
+        }
+
+        @keyframes sellGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.8); }
+        }
+
+        @keyframes wishlistGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.8); }
+        }
+
+        .navbar-nav .nav-link i {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover i {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* ====== PREMIUM SEARCH BAR ====== */
+        .search-container {
+            position: relative;
+            margin-right: 1.5rem;
+        }
+
+        .search-input {
+            background: var(--glass-bg);
+            border: 1.5px solid var(--border);
+            border-radius: 25px;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            color: var(--text);
+            width: 240px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.95rem;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1), 0 8px 32px var(--shadow);
+            width: 280px;
+            transform: translateY(-1px);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .search-input:focus + .search-icon {
+            color: var(--primary);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* ====== PREMIUM THEME TOGGLE ====== */
+        .theme-toggle {
+            background: var(--glass-bg);
+            border: 1.5px solid var(--border);
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--primary);
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 6px 25px rgba(147, 51, 234, 0.2);
+        }
+
+        .theme-toggle:hover::before {
+            left: 0;
+        }
+
+        .theme-toggle:hover i {
+            color: white;
+        }
+
+        /* ====== PREMIUM DROPDOWN ====== */
+        .dropdown-menu {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px var(--shadow);
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            animation: dropdownSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes dropdownSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            color: var(--text);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dropdown-item:hover {
+            background: var(--chip-bg);
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            text-align: center;
+        }
+
+        /* ====== PREMIUM FOOTER ====== */
+        footer {
+            background: var(--gradient-primary);
+            color: white;
+            text-align: center;
+            padding: 3rem 0 2rem;
+            margin-top: auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--gradient-glass);
+            pointer-events: none;
+        }
+
+        .footer-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: left 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: white;
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-link:hover::before {
+            left: 0;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-link {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: left 0.3s ease;
+        }
+
+        .social-link:hover {
+            transform: translateY(-3px) scale(1.1);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .social-link:hover::before {
+            left: 0;
+        }
+
+        .copyright {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        /* ====== MAIN CONTENT CONTAINER ====== */
+        main.main-content {
+            flex: 1;
+            padding: 3rem 0;
+            width: 100%;
+            animation: contentSlideUp 0.8s ease-out;
+        }
+
+        @keyframes contentSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-container {
+            width: 90%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ====== PREMIUM FLOATING FILTER BUTTON ====== */
+        .floating-filter-btn {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(147, 51, 234, 0.4);
+            cursor: pointer;
+            z-index: 999;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: pulse 3s ease-in-out infinite, float 6s ease-in-out infinite;
+            border: none;
+            font-size: 1.2rem;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        .floating-filter-btn:hover {
+            background: var(--primary-light);
+            transform: scale(1.15) rotate(15deg);
+            box-shadow: 0 12px 40px rgba(147, 51, 234, 0.6);
+            animation: none;
+        }
+
+        /* ====== PREMIUM FILTER MODAL ====== */
+        .filter-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .filter-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .filter-modal-content {
+            background: var(--glass-bg);
+            border-radius: 24px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 2.5rem;
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .filter-modal.active .filter-modal-content {
+            transform: translateY(0) scale(1);
+        }
+
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .filter-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .close-filter {
+            background: var(--chip-bg);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-filter:hover {
+            background: var(--primary);
+            color: white;
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        .filter-section {
+            margin-bottom: 2.5rem;
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .filter-section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .filter-chip {
+            background: var(--chip-bg);
+            border: 2px solid var(--border);
+            border-radius: 25px;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .filter-chip::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .filter-chip:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--shadow);
+        }
+
+        .filter-chip.active {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: transparent;
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(147, 51, 234, 0.3);
+        }
+
+        .filter-chip.active::before {
+            left: 0;
+        }
+
+        .filter-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-apply, .btn-clear {
+            padding: 0.75rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-apply {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 6px 20px rgba(147, 51, 234, 0.3);
+        }
+
+        .btn-apply::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-apply:hover::before {
+            left: 100%;
+        }
+
+        .btn-apply:hover {
+            background: var(--primary-light);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(147, 51, 234, 0.4);
+        }
+
+        .btn-clear {
+            background: transparent;
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+
+        .btn-clear:hover {
+            background: var(--chip-bg);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px var(--shadow);
+        }
+
+        /* ====== PREMIUM PRODUCT CARD ANIMATIONS ====== */
+        .product-card {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .product-card.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* ====== RIPPLE EFFECT ====== */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* ====== RESPONSIVE DESIGN ====== */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.75rem 1rem;
+            }
+            
+            .search-input {
+                width: 180px;
+            }
+            
+            .search-input:focus {
+                width: 220px;
+            }
+            
+            .filter-modal-content {
+                width: 95%;
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
+            .floating-filter-btn {
+                bottom: 25px;
+                right: 25px;
+                width: 56px;
+                height: 56px;
+            }
+            
+            .navbar-collapse {
+                background: var(--glass-bg);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-radius: 16px;
+                margin-top: 1rem;
+                padding: 1rem;
+                box-shadow: 0 20px 40px var(--shadow);
+                border: 1px solid var(--glass-border);
+                animation: slideDown 0.3s ease-out;
+            }
+            
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        }
+
+        @media (max-width: 576px) {
+            .search-input {
+                width: 150px;
+            }
+            
+            .search-input:focus {
+                width: 180px;
+            }
+            
+            .filter-chips {
+                gap: 0.5rem;
+            }
+            
+            .filter-chip {
+                padding: 0.6rem 1.25rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- ====== PREMIUM NAVBAR ====== -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                SecondLove <i class="fas fa-heart heart-beat"></i>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"><i class="fas fa-bars"></i></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' or request.path == '/dashboard/' %}active-home{% endif %}" 
+                           href="{% url 'dashboard_home' %}" id="homeLink">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'my_products' in request.path %}active-products{% endif %}" 
+                           href="{% url 'my_products' %}" id="productsLink">
+                            <i class="fas fa-box"></i> My Products
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'sell' in request.path %}active-sell{% endif %}" 
+                           href="{% url 'sell_product' %}" id="sellLink">
+                            <i class="fas fa-plus-circle"></i> Sell
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'wishlist' in request.path %}active-wishlist{% endif %}" 
+                           href="{% url 'wishlist_view' %}" id="wishlistLink">
+                            <i class="fas fa-heart"></i> Wishlist
+                        </a>
+                    </li>
+                    
+                    <!-- Premium Search Bar -->
+                    <li class="nav-item search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" placeholder="Search products..." id="globalSearch">
+                    </li>
+
+
+
+
+                    
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i> {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'logout' %}">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">
+                            <i class="fas fa-user-plus"></i> Register
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <div class="theme-toggle" id="themeToggle">
+                            <i class="fas fa-moon"></i>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ====== MAIN CONTENT ====== -->
+    <main class="main-content">
+        <div class="page-container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- ====== PREMIUM FLOATING FILTER BUTTON ====== -->
+    <div class="floating-filter-btn" id="filterToggle">
+        <i class="fas fa-filter"></i>
+    </div>
+
+    <!-- ====== PREMIUM FILTER MODAL ====== -->
+    <div class="filter-modal" id="filterModal">
+        <div class="filter-modal-content">
+            <div class="filter-header">
+                <h2 class="filter-title">Filter Products</h2>
+                <button class="close-filter" id="closeFilter">&times;</button>
+            </div>
+            
+            <form id="filterForm" method="POST" action="{% url 'filter_products' %}">
+                {% csrf_token %}
+                
+                <div class="filter-section">
+                    <h3 class="filter-section-title">
+                        <i class="fas fa-tags"></i> Category
+                    </h3>
+                    <div class="filter-chips" id="categoryChips">
+                        <div class="filter-chip" data-value="electronics">Electronics</div>
+                        <div class="filter-chip" data-value="books">Books</div>
+                        <div class="filter-chip" data-value="clothing">Clothing</div>
+                        <div class="filter-chip" data-value="furniture">Furniture</div>
+                        <div class="filter-chip" data-value="other">Other</div>
+                    </div>
+                    <input type="hidden" name="categories" id="selectedCategories">
+                </div>
+                
+                <div class="filter-section">
+                    <h3 class="filter-section-title">
+                        <i class="fas fa-map-marker-alt"></i> Location
+                    </h3>
+                    <div class="filter-chips" id="locationChips">
+                        <div class="filter-chip" data-value="bh1-front">BH1 Front</div>
+                        <div class="filter-chip" data-value="bh1-back">BH1 Back</div>
+                        <div class="filter-chip" data-value="gh1-front">GH1 Front</div>
+                        <div class="filter-chip" data-value="gh1-back">GH1 Back</div>
+                        <div class="filter-chip" data-value="bh2-front">BH2 Front</div>
+                        <div class="filter-chip" data-value="bh2-back">BH2 Back</div>
+                        <div class="filter-chip" data-value="gh2-front">GH2 Front</div>
+                        <div class="filter-chip" data-value="gh2-back">GH2 Back</div>
+                        <div class="filter-chip" data-value="old-campus">Old Campus</div>
+                    </div>
+                    <input type="hidden" name="locations" id="selectedLocations">
+                </div>
+                
+                <div class="filter-section">
+                    <h3 class="filter-section-title">
+                        <i class="fas fa-building"></i> Floor
+                    </h3>
+                    <div class="filter-chips" id="floorChips">
+                        <div class="filter-chip" data-value="ground">Ground</div>
+                        <div class="filter-chip" data-value="first">First</div>
+                        <div class="filter-chip" data-value="second">Second</div>
+                        <div class="filter-chip" data-value="third">Third</div>
+                    </div>
+                    <input type="hidden" name="floors" id="selectedFloors">
+                </div>
+                
+                <div class="filter-actions">
+                    <button type="button" class="btn-clear" id="clearFilters">Clear Filters</button>
+                    <button type="submit" class="btn-apply" id="applyFilters">Apply Filters</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ====== PREMIUM FOOTER ====== -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="{% url 'home' %}" class="footer-link">Home</a>
+                <a href="#" class="footer-link">About</a>
+                <a href="#" class="footer-link">Contact</a>
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+            </div>
+            
+            <div class="social-links">
+                <a href="#" class="social-link" aria-label="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="#" class="social-link" aria-label="LinkedIn">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="#" class="social-link" aria-label="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+            </div>
+            
+            <p class="copyright">&copy; 2025 SecondLove. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- ====== SCRIPTS ====== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // 🌗 Premium Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark-mode');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                localStorage.setItem('theme', 'light');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Ripple effect for buttons
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const circle = document.createElement('span');
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+            circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+            circle.classList.add('ripple');
+
+            const ripple = button.getElementsByClassName('ripple')[0];
+            if (ripple) {
+                ripple.remove();
+            }
+
+            button.appendChild(circle);
+        }
+
+        // Add ripple effect to buttons
+        const buttons = document.querySelectorAll('.btn-apply, .btn-clear, .theme-toggle, .floating-filter-btn');
+        buttons.forEach(button => {
+            button.addEventListener('click', createRipple);
+        });
+
+        // Active Navigation Management
+        function setActiveNav() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active-home', 'active-products', 'active-sell', 'active-wishlist');
+                
+                if (currentPath === '/' || currentPath === '/dashboard/') {
+                    if (link.id === 'homeLink') {
+                        link.classList.add('active-home');
+                    }
+                } else if (currentPath.includes('my_products')) {
+                    if (link.id === 'productsLink') {
+                        link.classList.add('active-products');
+                    }
+                } else if (currentPath.includes('sell')) {
+                    if (link.id === 'sellLink') {
+                        link.classList.add('active-sell');
+                    }
+                } else if (currentPath.includes('wishlist')) {
+                    if (link.id === 'wishlistLink') {
+                        link.classList.add('active-wishlist');
+                    }
+                }
+            });
+        }
+
+        // Initialize active navigation
+        document.addEventListener('DOMContentLoaded', setActiveNav);
+
+        // Filter Modal Functionality
+        const filterToggle = document.getElementById('filterToggle');
+        const filterModal = document.getElementById('filterModal');
+        const closeFilter = document.getElementById('closeFilter');
+        const applyFilters = document.getElementById('applyFilters');
+        const clearFilters = document.getElementById('clearFilters');
+        const filterForm = document.getElementById('filterForm');
+        
+        // Open filter modal
+        filterToggle.addEventListener('click', () => {
+            filterModal.classList.add('active');
+        });
+        
+        // Close filter modal
+        closeFilter.addEventListener('click', () => {
+            filterModal.classList.remove('active');
+        });
+        
+        // Close modal when clicking outside
+        filterModal.addEventListener('click', (e) => {
+            if (e.target === filterModal) {
+                filterModal.classList.remove('active');
+            }
+        });
+        
+        // Chip selection functionality
+        const chips = document.querySelectorAll('.filter-chip');
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                chip.classList.toggle('active');
+                updateHiddenInputs();
+            });
+        });
+        
+        // Update hidden inputs with selected values
+        function updateHiddenInputs() {
+            const selectedCategories = Array.from(document.querySelectorAll('#categoryChips .filter-chip.active'))
+                .map(chip => chip.getAttribute('data-value'));
+            const selectedLocations = Array.from(document.querySelectorAll('#locationChips .filter-chip.active'))
+                .map(chip => chip.getAttribute('data-value'));
+            const selectedFloors = Array.from(document.querySelectorAll('#floorChips .filter-chip.active'))
+                .map(chip => chip.getAttribute('data-value'));
+                
+            document.getElementById('selectedCategories').value = selectedCategories.join(',');
+            document.getElementById('selectedLocations').value = selectedLocations.join(',');
+            document.getElementById('selectedFloors').value = selectedFloors.join(',');
+        }
+        
+        // Clear all filters
+        clearFilters.addEventListener('click', () => {
+            chips.forEach(chip => {
+                chip.classList.remove('active');
+            });
+            updateHiddenInputs();
+        });
+        
+        // Form submission handling
+        // filterForm.addEventListener('submit', function(e) {
+        //     e.preventDefault();
+            
+        //     // Show loading state
+        //     const applyBtn = document.getElementById('applyFilters');
+        //     const originalText = applyBtn.innerHTML;
+        //     applyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Applying...';
+        //     applyBtn.disabled = true;
+            
+        //     // Submit form via AJAX
+        //     const formData = new FormData(this);
+            
+        //     fetch(this.action, {
+        //         method: 'POST',
+        //         body: formData,
+        //         headers: {
+        //             'X-Requested-With': 'XMLHttpRequest'
+        //         }
+        //     })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         if (data.success) {
+        //             // Close modal
+        //             filterModal.classList.remove('active');
+        //             // Reload or update products (you can customize this based on your needs)
+        //             if (data.redirect_url) {
+        //                 window.location.href = data.redirect_url;
+        //             } else {
+        //                 location.reload();
+        //             }
+        //         } else {
+        //             alert('Error applying filters. Please try again.');
+        //         }
+        //     })
+        //     .catch(error => {
+        //         console.error('Error:', error);
+        //         alert('Error applying filters. Please try again.');
+        //     })
+        //     .finally(() => {
+        //         // Reset button state
+        //         applyBtn.innerHTML = originalText;
+        //         applyBtn.disabled = false;
+        //     });
+        // });
+        
+        // Global search functionality
+        const globalSearch = document.getElementById('globalSearch');
+        globalSearch.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            searchProducts(searchTerm);
+        });
+        
+        // Product search function (placeholder - connect to your actual product data)
+        function searchProducts(searchTerm) {
+            // This would search your products based on the search term
+            console.log('Searching for:', searchTerm);
+            
+            // Show loading animation
+            $('.product-card').css('opacity', '0.5');
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                // In a real implementation, you would filter your product data here
+                // For now, we'll just show all products with animation
+                $('.product-card').each(function(index) {
+                    $(this).css('opacity', '0').removeClass('visible');
+                    
+                    setTimeout(() => {
+                        $(this).addClass('visible').css('opacity', '1');
+                    }, index * 100);
+                });
+            }, 300);
+        }
+        
+        // Initialize product card animations on page load
+        $(document).ready(function() {
+            $('.product-card').each(function(index) {
+                $(this).css('opacity', '0');
+                
+                setTimeout(() => {
+                    $(this).addClass('visible').css('opacity', '1');
+                }, index * 150);
+            });
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

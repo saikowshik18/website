@@ -1,0 +1,1117 @@
+{% extends 'base.html' %}
+
+{% block title %}Sell Product | SecondLove{% endblock %}
+
+{% block extra_css %}
+<style>
+.sell-container {
+  max-width: 800px;
+  margin: 40px auto;
+  background: var(--card-bg);
+  padding: 0;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px var(--shadow);
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+/* Progress Steps */
+.progress-header {
+  background: var(--bg-secondary);
+  padding: 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-bottom: 2rem;
+  padding: 0 20px;
+}
+
+.progress-steps::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 50px;
+  right: 50px;
+  height: 3px;
+  background: var(--border);
+  transform: translateY(-50%);
+  z-index: 1;
+  transition: all 0.4s ease;
+}
+
+.progress-bar {
+  position: absolute;
+  top: 20px;
+  left: 50px;
+  height: 3px;
+  background: var(--primary);
+  transform: translateY(-50%);
+  transition: all 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+  z-index: 2;
+  width: 0%;
+}
+
+.step {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.step:first-child {
+  align-items: flex-start;
+}
+
+.step:last-child {
+  align-items: flex-end;
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 3px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: var(--text-light);
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  position: relative;
+  z-index: 4;
+}
+
+.step.active .step-number {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  transform: scale(1.15);
+  box-shadow: 0 0 0 6px var(--primary-glow);
+}
+
+.step.completed .step-number {
+  background: var(--success);
+  border-color: var(--success);
+  color: white;
+  box-shadow: 0 0 0 4px rgba(6, 214, 160, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(6, 214, 160, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(6, 214, 160, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(6, 214, 160, 0); }
+}
+
+.step-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-light);
+  text-align: center;
+  line-height: 1.3;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+}
+
+.step.active .step-label {
+  color: var(--primary);
+  font-weight: 600;
+  transform: translateY(2px);
+}
+
+/* Form Steps */
+.form-steps {
+  padding: 2rem;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-step {
+  display: none;
+  opacity: 0;
+  transform: translateX(20px);
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.form-step.active {
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.step-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  animation: contentSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both;
+}
+
+@keyframes contentSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.step-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  text-align: center;
+  animation: titleSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s both;
+}
+
+@keyframes titleSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.step-description {
+  color: var(--text-light);
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  animation: descriptionSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s both;
+}
+
+@keyframes descriptionSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 1.5rem;
+  animation: formGroupSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.form-group:nth-child(1) { animation-delay: 0.4s; }
+.form-group:nth-child(2) { animation-delay: 0.5s; }
+.form-group:nth-child(3) { animation-delay: 0.6s; }
+.form-group:nth-child(4) { animation-delay: 0.7s; }
+
+@keyframes formGroupSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-group label {
+  font-weight: 500;
+  color: var(--text);
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.form-control, textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 1rem;
+  outline: none;
+  background: var(--bg);
+  color: var(--text);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Poppins', sans-serif;
+}
+
+.form-control:focus, textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+  transform: translateY(-2px);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Chip Groups */
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.chip {
+  padding: 10px 20px;
+  border-radius: 25px;
+  background: var(--bg-secondary);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid var(--border);
+  color: var(--text);
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-align: center;
+  flex: 1;
+  min-width: calc(33.333% - 1rem);
+  position: relative;
+  overflow: hidden;
+}
+
+.chip::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.chip:hover::before {
+  left: 100%;
+}
+
+.chip:hover {
+  border-color: var(--primary);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 6px 20px var(--shadow);
+}
+
+.chip.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  transform: scale(1.05);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+  animation: chipSelect 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes chipSelect {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1.05); }
+}
+
+/* Academic Year Chips */
+.academic-year-chips {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.academic-chip {
+  padding: 12px 8px;
+  border-radius: 12px;
+  background: var(--bg-secondary);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid var(--border);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.academic-chip::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.academic-chip:hover::before {
+  left: 100%;
+}
+
+.academic-chip:hover {
+  border-color: var(--secondary);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(78, 205, 196, 0.3);
+}
+
+.academic-chip.active {
+  background: var(--secondary);
+  color: white;
+  border-color: var(--secondary);
+  transform: scale(1.05);
+  box-shadow: 0 0 0 3px var(--secondary-glow);
+  animation: chipSelect 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Location and Floor Layout */
+.location-floor-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.location-section {
+  grid-column: 1;
+}
+
+.floor-section {
+  grid-column: 2;
+}
+
+.location-chips {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.floor-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.floor-chip {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--bg-secondary);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid var(--border);
+  color: var(--text);
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.floor-chip::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.floor-chip:hover::before {
+  left: 100%;
+}
+
+.floor-chip:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px var(--accent-glow);
+}
+
+.floor-chip.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+  transform: scale(1.05);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  animation: chipSelect 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Image Preview */
+.image-preview-container {
+  text-align: center;
+  margin-top: 1rem;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: imagePreviewSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.8s both;
+}
+
+@keyframes imagePreviewSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.image-preview {
+  max-width: 100%;
+  max-height: 250px;
+  border-radius: 12px;
+  border: 2px dashed var(--border);
+  padding: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.image-preview:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+  transform: scale(1.02);
+}
+
+/* Navigation Buttons */
+.form-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  animation: navSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.9s both;
+}
+
+@keyframes navSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav-btn {
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid transparent;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.nav-btn:hover::before {
+  left: 100%;
+}
+
+.btn-prev {
+  background: var(--bg-secondary);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.btn-prev:hover {
+  background: var(--bg-tertiary);
+  transform: translateX(-3px);
+  box-shadow: 0 4px 15px var(--shadow);
+}
+
+.btn-next {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-next:hover {
+  background: var(--primary-dark);
+  transform: translateX(3px);
+  box-shadow: 0 4px 20px var(--primary-glow);
+}
+
+.btn-submit {
+  background: var(--success);
+  color: white;
+}
+
+.btn-submit:hover {
+  background: #05b388;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(6, 214, 160, 0.4);
+}
+
+/* Step Indicators */
+.step-indicator {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Tip Box with Glow */
+.tip-box {
+  background: var(--bg-secondary);
+  padding: 1rem;
+  border-radius: 10px;
+  border-left: 4px solid var(--accent);
+  margin-top: 1rem;
+  box-shadow: 0 2px 8px var(--shadow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: tipSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.7s both;
+}
+
+@keyframes tipSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.tip-box:hover {
+  box-shadow: 0 4px 20px var(--accent-glow);
+  transform: translateY(-2px);
+}
+
+.tip-box p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-light);
+  line-height: 1.4;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sell-container {
+    margin: 20px;
+    border-radius: 15px;
+  }
+  
+  .progress-steps {
+    padding: 0 10px;
+  }
+  
+  .progress-steps::before {
+    left: 30px;
+    right: 30px;
+  }
+  
+  .progress-bar {
+    left: 30px;
+  }
+  
+  .form-steps {
+    padding: 1.5rem;
+    min-height: 450px;
+  }
+  
+  .step-label {
+    font-size: 0.75rem;
+  }
+  
+  .step-number {
+    width: 35px;
+    height: 35px;
+    font-size: 0.9rem;
+  }
+  
+  .location-floor-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .location-section, .floor-section {
+    grid-column: 1;
+  }
+  
+  .location-chips {
+    grid-template-columns: 1fr;
+  }
+  
+  .floor-chips {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .floor-chip {
+    flex: 1;
+    min-width: calc(50% - 0.5rem);
+  }
+  
+  .chip, .academic-chip {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    min-width: calc(50% - 0.5rem);
+  }
+  
+  .academic-year-chips {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .nav-btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .progress-steps {
+    gap: 0.5rem;
+  }
+  
+  .step-label {
+    display: none;
+  }
+  
+  .chip-group {
+    gap: 0.5rem;
+  }
+  
+  .chip, .academic-chip, .floor-chip {
+    flex: 1;
+    min-width: calc(50% - 0.5rem);
+    text-align: center;
+  }
+  
+  .academic-year-chips {
+    grid-template-columns: 1fr;
+  }
+  
+  .step-title {
+    font-size: 1.3rem;
+  }
+  
+  .step-description {
+    font-size: 0.9rem;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sell-container">
+  <!-- Progress Steps Header -->
+  <div class="progress-header">
+    <h2 style="text-align: center; margin-bottom: 1rem; color: var(--text);">Sell Your Product</h2>
+    <div class="progress-steps">
+      <div class="progress-bar" id="progressBar"></div>
+      <div class="step active" data-step="1">
+        <div class="step-number">1</div>
+        <div class="step-label">Basic Info</div>
+      </div>
+      <div class="step" data-step="2">
+        <div class="step-number">2</div>
+        <div class="step-label">Details</div>
+      </div>
+      <div class="step" data-step="3">
+        <div class="step-number">3</div>
+        <div class="step-label">Location</div>
+      </div>
+      <div class="step" data-step="4">
+        <div class="step-number">4</div>
+        <div class="step-label">Contact & Image</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Steps -->
+  <form method="POST" enctype="multipart/form-data" id="sellForm">
+    {% csrf_token %}
+    
+    <div class="form-steps">
+      <!-- Step 1: Basic Information -->
+      <div class="form-step active" data-step="1">
+        <div class="step-content">
+          <h3 class="step-title">Basic Information</h3>
+          <p class="step-description">Tell us about your product and set the right category</p>
+          
+          <div class="form-group">
+            <label for="productName">Product Name</label>
+            <input type="text" id="productName" name="name" class="form-control" placeholder="Enter product name" required>
+            <div class="error-message">Please enter a product name</div>
+          </div>
+
+          <div class="form-group">
+            <label for="productPrice">Price (₹)</label>
+            <input type="number" id="productPrice" name="price" class="form-control" min="0" placeholder="Enter price in rupees" required>
+            <div class="error-message">Please enter a valid price</div>
+          </div>
+
+          <div class="form-group">
+            <label>Category</label>
+            <div class="chip-group" id="categoryChips">
+              <div class="chip" data-value="electronics">📱 Electronics</div>
+              <div class="chip" data-value="books">📚 Books</div>
+              <div class="chip" data-value="furniture">🛋️ Furniture</div>
+              <div class="chip" data-value="clothing">👕 Clothing</div>
+              <div class="chip" data-value="other">📦 Other</div>
+            </div>
+            <input type="hidden" name="category" id="categoryInput" required>
+            <div class="error-message">Please select a category</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Product Details -->
+      <div class="form-step" data-step="2">
+        <div class="step-content">
+          <h3 class="step-title">Product Details</h3>
+          <p class="step-description">Describe your product and select your academic year</p>
+          
+          <div class="form-group">
+            <label for="productDescription">Description</label>
+            <textarea id="productDescription" name="description" placeholder="Describe the condition, features, specifications, and any important details about your product..." required></textarea>
+            <div class="error-message">Please provide a description</div>
+          </div>
+
+          <div class="form-group">
+            <label>Academic Year</label>
+            <div class="academic-year-chips" id="academicYearChips">
+              <div class="academic-chip" data-value="P1">P1</div>
+              <div class="academic-chip" data-value="P2">P2</div>
+              <div class="academic-chip" data-value="E1">E1</div>
+              <div class="academic-chip" data-value="E2">E2</div>
+              <div class="academic-chip" data-value="E3">E3</div>
+              <div class="academic-chip" data-value="E4">E4</div>
+            </div>
+            <input type="hidden" name="academic_year" id="academicYearInput" required>
+            <div class="error-message">Please select your academic year</div>
+          </div>
+
+          <div class="tip-box">
+            <p><strong>💡 Pro Tip:</strong> Be honest about the product condition. Detailed descriptions attract more serious buyers!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Location Information -->
+      <div class="form-step" data-step="3">
+        <div class="step-content">
+          <h3 class="step-title">Location Details</h3>
+          <p class="step-description">Where can buyers find you for pickup?</p>
+          
+          <div class="location-floor-grid">
+            <div class="form-group location-section">
+              <label>Location</label>
+              <div class="location-chips" id="locationChips">
+                <div class="chip" data-value="bh1-front">🏢 BH1 Front</div>
+                <div class="chip" data-value="bh1-back">🏢 BH1 Back</div>
+                <div class="chip" data-value="bh2-front">🏢 BH2 Front</div>
+                <div class="chip" data-value="bh2-back">🏢 BH2 Back</div>
+                <div class="chip" data-value="gh1-front">🏠 GH1 Front</div>
+                <div class="chip" data-value="gh1-back">🏠 GH1 Back</div>
+                <div class="chip" data-value="gh2-front">🏠 GH2 Front</div>
+                <div class="chip" data-value="gh2-back">🏠 GH2 Back</div>
+                <div class="chip" data-value="old-campus">🏛️ Old Campus</div>
+              </div>
+              <input type="hidden" name="location" id="locationInput" required>
+              <div class="error-message">Please select a location</div>
+            </div>
+
+            <div class="form-group floor-section">
+              <label>Floor</label>
+              <div class="floor-chips" id="floorChips">
+                <div class="floor-chip" data-value="ground">1️⃣ Ground</div>
+                <div class="floor-chip" data-value="first">2️⃣ First</div>
+                <div class="floor-chip" data-value="second">3️⃣ Second</div>
+                <div class="floor-chip" data-value="third">4️⃣ Third</div>
+              </div>
+              <input type="hidden" name="floor" id="floorInput" required>
+              <div class="error-message">Please select a floor</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="roomNumber">Room Number</label>
+            <input type="text" id="roomNumber" name="room_number" class="form-control" placeholder="e.g., 101, 205, etc.">
+          </div>
+
+          <div class="form-group">
+            <label for="wing">Wing</label>
+            <input type="text" id="wing" name="wing" class="form-control" placeholder="e.g., A, B, C, etc.">
+          </div>
+
+          <div class="tip-box">
+            <p><strong>📍 Location Tip:</strong> Provide accurate location details to make pickup easy for buyers!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Contact & Image -->
+      <div class="form-step" data-step="4">
+        <div class="step-content">
+          <h3 class="step-title">Contact & Image</h3>
+          <p class="step-description">Add your contact info and upload product photos</p>
+          
+          <div class="form-group">
+            <label for="contactNumber">Contact Number</label>
+            <input type="tel" id="contactNumber" name="contact_number" class="form-control" placeholder="Your WhatsApp number" required>
+            <div class="error-message">Please enter a valid contact number</div>
+          </div>
+
+          <div class="form-group">
+            <label for="imageInput">Product Image</label>
+            <input type="file" id="imageInput" name="image" class="form-control" accept="image/*" required>
+            <div class="error-message">Please upload a product image</div>
+          </div>
+
+          <div class="image-preview-container">
+            <img id="imagePreview" class="image-preview" style="display:none;">
+          </div>
+
+          <div class="tip-box">
+            <p><strong>📸 Photo Tip:</strong> Use clear, well-lit photos from multiple angles to showcase your product better!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="form-navigation">
+        <button type="button" class="nav-btn btn-prev" id="prevBtn" style="display: none;">
+          <i class="fas fa-arrow-left"></i> Previous
+        </button>
+        
+        <span class="step-indicator" id="stepIndicator">Step 1 of 4</span>
+        
+        <button type="button" class="nav-btn btn-next" id="nextBtn">
+          Next <i class="fas fa-arrow-right"></i>
+        </button>
+        
+        <button type="submit" class="nav-btn btn-submit" id="submitBtn" style="display: none;">
+          <i class="fas fa-check"></i> Post Product
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('sellForm');
+  const steps = document.querySelectorAll('.form-step');
+  const progressSteps = document.querySelectorAll('.step');
+  const progressBar = document.getElementById('progressBar');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  const stepIndicator = document.getElementById('stepIndicator');
+  
+  let currentStep = 1;
+  const totalSteps = steps.length;
+
+  // Initialize progress bar
+  updateProgressBar();
+  updateNavigation();
+
+  // Chip functionality
+  function setupChips(groupId, inputId) {
+    const chips = document.querySelectorAll(`#${groupId} .chip`);
+    const input = document.getElementById(inputId);
+    
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        input.value = chip.getAttribute('data-value');
+        
+        // Remove error state when chip is selected
+        input.setCustomValidity('');
+      });
+    });
+  }
+
+  // Floor chips setup
+  function setupFloorChips() {
+    const chips = document.querySelectorAll('#floorChips .floor-chip');
+    const input = document.getElementById('floorInput');
+    
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        input.value = chip.getAttribute('data-value');
+        
+        // Remove error state when chip is selected
+        input.setCustomValidity('');
+      });
+    });
+  }
+
+  // Academic year chips setup
+  function setupAcademicChips() {
+    const chips = document.querySelectorAll('#academicYearChips .academic-chip');
+    const input = document.getElementById('academicYearInput');
+    
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        input.value = chip.getAttribute('data-value');
+        
+        // Remove error state when chip is selected
+        input.setCustomValidity('');
+      });
+    });
+  }
+
+  setupChips('categoryChips', 'categoryInput');
+  setupChips('locationChips', 'locationInput');
+  setupFloorChips();
+  setupAcademicChips();
+
+  // Image preview
+  document.getElementById('imageInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const preview = document.getElementById('imagePreview');
+    if (file) {
+      preview.src = URL.createObjectURL(file);
+      preview.style.display = 'block';
+    } else {
+      preview.style.display = 'none';
+    }
+  });
+
+  // Navigation functions
+  function showStep(stepNumber) {
+    // Add exit animation to current step
+    const currentActive = document.querySelector('.form-step.active');
+    if (currentActive) {
+      currentActive.style.opacity = '0';
+      currentActive.style.transform = 'translateX(-20px)';
+      
+      setTimeout(() => {
+        steps.forEach(step => step.classList.remove('active'));
+        progressSteps.forEach(step => step.classList.remove('active'));
+        
+        document.querySelector(`.form-step[data-step="${stepNumber}"]`).classList.add('active');
+        document.querySelector(`.step[data-step="${stepNumber}"]`).classList.add('active');
+        
+        // Mark previous steps as completed
+        for (let i = 1; i < stepNumber; i++) {
+          document.querySelector(`.step[data-step="${i}"]`).classList.add('completed');
+        }
+        
+        currentStep = stepNumber;
+        updateProgressBar();
+        updateNavigation();
+      }, 300);
+    }
+  }
+
+  function updateProgressBar() {
+    const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+    progressBar.style.width = `${progress}%`;
+    stepIndicator.textContent = `Step ${currentStep} of ${totalSteps}`;
+  }
+
+  function updateNavigation() {
+    prevBtn.style.display = currentStep > 1 ? 'flex' : 'none';
+    
+    if (currentStep === totalSteps) {
+      nextBtn.style.display = 'none';
+      submitBtn.style.display = 'flex';
+    } else {
+      nextBtn.style.display = 'flex';
+      submitBtn.style.display = 'none';
+    }
+  }
+
+  function validateStep(step) {
+    const currentStepElement = document.querySelector(`.form-step[data-step="${step}"]`);
+    const inputs = currentStepElement.querySelectorAll('input[required], textarea[required], select[required]');
+    
+    let isValid = true;
+    
+    inputs.forEach(input => {
+      if (!input.value.trim()) {
+        isValid = false;
+        input.setCustomValidity('This field is required');
+      } else {
+        input.setCustomValidity('');
+      }
+    });
+
+    // Special validation for chips
+    const chipInputs = currentStepElement.querySelectorAll('input[type="hidden"][required]');
+    chipInputs.forEach(input => {
+      if (!input.value) {
+        isValid = false;
+        input.setCustomValidity('Please make a selection');
+      } else {
+        input.setCustomValidity('');
+      }
+    });
+
+    return isValid;
+  }
+
+  // Event listeners
+  nextBtn.addEventListener('click', function() {
+    if (validateStep(currentStep)) {
+      showStep(currentStep + 1);
+    } else {
+      // Trigger validation UI
+      const currentStepElement = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+      const firstInvalid = currentStepElement.querySelector(':invalid');
+      if (firstInvalid) {
+        firstInvalid.focus();
+        firstInvalid.reportValidity();
+      }
+    }
+  });
+
+  prevBtn.addEventListener('click', function() {
+    showStep(currentStep - 1);
+  });
+
+  // Form submission
+  form.addEventListener('submit', function(e) {
+    if (!validateStep(currentStep)) {
+      e.preventDefault();
+      const firstInvalid = form.querySelector(':invalid');
+      if (firstInvalid) {
+        firstInvalid.focus();
+        firstInvalid.reportValidity();
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

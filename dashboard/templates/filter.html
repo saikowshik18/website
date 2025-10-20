@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Filtered Products | SecondLove{% endblock %}
+
+{% block extra_css %}
+<style>
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.product-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px var(--shadow);
+}
+
+.product-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+.product-name {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+}
+
+.product-price {
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.product-meta {
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-light);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<h2 style="margin-bottom: 1.5rem;">Filtered Products</h2>
+
+{% if products %}
+<div class="product-grid">
+    {% for product in products %}
+    <div class="product-card">
+        <a href="{% url 'product_detail' product.id %}">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" class="product-image" alt="{{ product.name }}">
+            {% else %}
+            <div style="height:180px; display:flex; align-items:center; justify-content:center; background:#f0f0f0;">
+                <i class="fas fa-image fa-2x text-muted"></i>
+            </div>
+            {% endif %}
+        </a>
+        <div class="card-body">
+            <h5 class="product-name">{{ product.name }}</h5>
+            <div class="product-price">₹{{ product.price }}</div>
+            <div class="product-meta">
+                <span>{{ product.category|title }}</span> | 
+                <span>{{ product.location|title }}</span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-box-open fa-3x"></i>
+    <h3>No Products Found</h3>
+    <p>Try adjusting your filters to see products.</p>
+</div>
+{% endif %}
+{% endblock %}
